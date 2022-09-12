@@ -46,7 +46,7 @@
                 </tbody>
             </table>
             <div class="clearfix">
-                <div class="hint-text">Showing <b>{{books.max_size}}</b> out of <b>{{books.total}}</b> entries</div>
+                <div class="hint-text">Showing <b>{{length}}</b> out of <b>{{books.total}}</b> entries</div>
                 <ul class="pagination">
                     <li class="page-item" v-bind:class="getDisablePreviousClass(books.page)" v-on:click="fetchData(--books.page)"><a class="page-link">Previous</a></li>
                     <li v-for="n in books.total_pages" class="page-item" v-bind:class="getActiveClass(n)" v-on:click="fetchData(n)"><a class="page-link">{{n}}</a></li>
@@ -95,12 +95,13 @@
                         </div>
                         <div class="form-group">
                             <label>Image</label>
-                            <input type="file" class="form-control" @change="onFileSelect()">
+                            <!-- <input type="file" class="form-control" @change="onFileSelect()"> -->
+                            <input type="text" v-model="image" class="form-control" required>
                         </div>
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-success" @click="addNewBook()" value="Add">
+                        <input type="button" class="btn btn-success" @click="addNewBook()" value="Add">
                     </div>
                 </form>
             </div>
@@ -151,7 +152,7 @@
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-info" @click="editBook(id)" value="Save">
+                        <input type="button" class="btn btn-info" @click="editBook(id)" value="Save">
                     </div>
                 </form>
             </div>
@@ -172,7 +173,7 @@
                     </div>
                     <div class="modal-footer">
                         <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                        <input type="submit" class="btn btn-danger" @click="deletebook(id)" value="Delete">
+                        <input type="button" class="btn btn-danger" @click="deletebook(id)" value="Delete">
                     </div>
                 </form>
             </div>
@@ -195,13 +196,15 @@
     isbn:"",
     published:"",
     publisher:"",
-    image:""
+    image:"",
+    length:0
         }
     },
     mounted() {
         fetch("http://127.0.0.1:8000/api/books?page=1")
         .then(res => res.json())
         .then(data => this.books = data, this.pages)
+        .then(data => this.length = data.data.length)
         .catch(err => console.log(err.message));
     },
     methods: {
@@ -214,6 +217,7 @@
                 fetch("http://127.0.0.1:8000/api/books?page=" + page)
                 .then(res => res.json())
                 .then(data => this.books = data, this.pages)
+                .then(data => this.length = data.data.length)
                 .catch(err => console.log(err.message));
             }
         },
@@ -255,7 +259,8 @@
             });
         },
         addNewBook(){
-
+            debugger;
+            this.$forceUpdate();
         },
         editBook(id){
             debugger;
@@ -266,9 +271,9 @@
             formData.append("genre", this.genre);
             formData.append("description", this.description)
             formData.append("isbn", this.isbn);
-            formData.append("published", this.published)
+            formData.append("published", this.published);
             formData.append("publisher", this.publisher);
-            formData.append("image", this.image)
+            formData.append("image", this.image);
             axios.put('http://127.0.0.1:8000/api/books/'+this.id, formData)
             .then(res => {
                 console.log(res);

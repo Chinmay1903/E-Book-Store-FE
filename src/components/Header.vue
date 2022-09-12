@@ -12,12 +12,12 @@
             <div class="col-lg-8 text-left">
                 <form action="">
                     <div class="input-group">
-                        <input type="text" class="form-control"
+                        <input type="text" class="form-control" v-model="search" @keyup:enter="trigger"
                             placeholder="Search by Title, Author, Genre, ISBN, Publish Date, Publisher">
                         <div class="input-group-append">
-                            <span class="input-group-text bg-transparent text-primary">
+                            <button type="button" @click="getSearch(search)" ref="search" class="input-group-text bg-transparent text-primary">
                                 <i class="fa fa-search"></i>
-                            </span>
+                            </button>
                         </div>
                     </div>
                 </form>
@@ -34,9 +34,19 @@
 <script>
 export default {
 name: "HomeView",
-data() {
-return {
-books: []
+    data() {
+        return {
+        search: this.search,
+        }
+    },
+    props: {
+        search : String,
+        getSearch : Function
+    },
+    methods:{
+        trigger(){
+            this.$refs.search.click()
+        }
+    }
 }
-}}
 </script>
